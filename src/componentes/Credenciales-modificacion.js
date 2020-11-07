@@ -118,7 +118,6 @@ const grabarDatos = async (values)=>{
 
         resultado= await Axios.put(`/api/tablasgenerales/credenciales/autorizacion/${_id}`,objetoAgrabar)
 
-        console.log('El resultado de grabar la solicitud es',resultado)
         Swal.fire({
             html:mensaje_html,
             icon: 'warning',

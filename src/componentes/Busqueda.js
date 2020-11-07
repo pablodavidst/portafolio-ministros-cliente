@@ -56,7 +56,6 @@ export default function Busqueda({finalizarSeleccion,objetoModificacion}){
 
     const handleInputChange = (e)=>{  // defino una función que va a escuchar los cambios que ocurren en los inputs. Agrego el listener con onChange
         //e.preventDefault()
-        console.log(e.target.value)
         setTextoBusqueda(e.target.value)
     }
 

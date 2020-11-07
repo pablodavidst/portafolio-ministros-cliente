@@ -81,8 +81,6 @@ const grabarDatos = async (values)=>{
 
     const data = new FormData();
 
-    console.log('usuario',usuario)
-
     data.append('adjunto', mail.adjunto);
     data.append('asunto', mail.asunto);
     data.append('mensaje', mail.mensaje);
@@ -90,7 +88,6 @@ const grabarDatos = async (values)=>{
     data.append('usuario',usuario.nombre);
     data.append('id_region',usuario.id_region);
 
-  //  console.log('objetoAgrabar',objetoAgrabar)
     setGrabandoDatos(true)
 
     let mensaje_html = `<p>El mensaje se envió correctamente</p>`

@@ -229,7 +229,6 @@ useEffect(()=>{
                     cod_seguridad: noNullNumber(datosDelRecordset.cod_seguridad)
                 }
                   
-                console.log('datosObrero',datosObrero)
                 //se actualiza el objeto  de inicializacion con lo que traemos de la tabla
                 // se hace un merge de los datos, los que son comunes se pisan y los nuevos se agregan
 
@@ -610,7 +609,6 @@ const onsubmitObrero = values =>{
 {  /*   <div style={{width: "200px"}}><p>{JSON.stringify(values, null, "\t")}</p></div> */} 
 <div  className="mb-2 titulo-cab-modal titulo-abm">
     <div className="flex f-row justify-content-space-around">
-        <span className="inline-block-1">{tituloAbm}</span>
         <span className="inline-block-1">{tituloAbm}</span>
     </div>
 </div>
@@ -1259,16 +1257,11 @@ function diferencia(horai,horaf,minutoi,minutof) {
     var hora_desde_nummerica = Number(hora_desde + min_desde)
     var hora_hasta_nummerica = Number(hora_hasta + min_hasta)
 
-    console.log('hora desde: ' + hora_desde_nummerica)
-    console.log('hora hasta: ' + hora_hasta_nummerica)
 
     if (hora_desde_nummerica >= hora_hasta_nummerica) {
         resultado = false;
         mensaje = 'La hora de inicio debe ser anterior a la hora de fín'
     }
-
-    console.log('hora_hasta_nummerica',hora_hasta_nummerica)
-    console.log('hora_desde_nummerica',hora_desde_nummerica)
 
     return (hora_hasta_nummerica > hora_desde_nummerica  )
 

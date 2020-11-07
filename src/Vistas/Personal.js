@@ -5,10 +5,10 @@ import Modal from '../componentes/Modal';
 import useModal from '../hooks/useModal';
 import { Link,useParams } from 'react-router-dom';
 import Loading from '../componentes/Loading';
-import {useAlumno} from '../Context/alumnoContext';
+import {useContextoGlobal} from '../Context/contextoGlobal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit,faIdCard, faCheckCircle,faTimesCircle, faCircle, faPlusSquare,faDotCircle,faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons';
-import { faCircle as iconoBotonOrden, faFileDownload, faEye,faMinus, faWindowClose,faAngleRight,faAngleLeft, faTrash, faSync,faEquals, faGreaterThanEqual,faEnvelopeSquare, faListOl, faMailBulk,faUserCheck,faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faSearchDollar,faCircle as iconoBotonOrden, faFileDownload, faEye,faMinus, faWindowClose,faAngleRight,faAngleLeft, faTrash, faSync,faEquals, faGreaterThanEqual,faEnvelopeSquare, faListOl, faMailBulk,faUserCheck,faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import AbmObrero from '../abms/Abm-obrero';
 import AbmIglesia from '../abms/Abm-iglesia';
 import FormularioMail from '../abms/FormularioMail';
@@ -20,12 +20,9 @@ import {scrollTop, hacerScroll,hacerfocoEnPrimerInput,seleccionarTextoInput} fro
 import { text } from '@fortawesome/fontawesome-svg-core';
 import Estadisticas from '../componentes/Estadisticas'
 import { CSVLink, CSVDownload } from "react-csv";
-const csvData = [
-    ["firstname", "lastname", "email"],
-    ["Ahmed", "Tomi", "ah@smthing.co.com"],
-    ["Raed", "Labes", "rl@smthing.co.com"],
-    ["Yezzi", "Min l3b", "ymin@cocococo.com"]
-  ];
+import IngresosIgl from '../componentes/IngresosIgl';
+import PiePagina from '../componentes/PiePagina';
+import {imprimir as imprimirMinistros} from '../impresiones/ministros';
 
 const anchoPaginacion = 50;
 
@@ -55,7 +52,8 @@ export default function Cursos({match,history}){
     const [iglesiasObrero,setIglesiasObrero]=useState([])
 
     const [iglesiaSeleccionadaCredencial,setIglesiaSeleccionadaCredencial]= useState(null);
-
+    const [iglesiaSeleccionadaIngresos,setIglesiaSeleccionadaIngresos]= useState(null);
+    
     const [ministerioSeleccion,setMinisterioSeleccion]=useState(-1)
     const [tipoIglesiaSeleccion,setTipoIglesiaSeleccion]=useState(-1)
     const [estadoCredencialSeleccion,setEstadoCredencialSeleccion]=useState(-1)
@@ -84,8 +82,7 @@ export default function Cursos({match,history}){
     const [cursosRecuperatorios,setCursosRecuperatorios]= useState(-1);
     // para activar el modal llamar a la función toggle en con alguna condicion o un evento...
     const [cargandoCursos,setCargandoCursos] = useState(false);
-    const {cuatrimestreActivo,desHabilitarBusquedaAlumnos, usuario} = useAlumno();
-   // const {alumno, cambiarAlumno} = useAlumno();
+    const {cuatrimestreActivo, usuario} = useContextoGlobal();
     const [crearCurso,setCrearCurso]=useState(false);
     const [cursoAcopiar,setCursoAcopiar]=useState(null);
     const [copiarUnCurso, setCopiarUnCurso] = useState(false);
@@ -129,7 +126,6 @@ export default function Cursos({match,history}){
 
     useEffect(()=>{
     
-    desHabilitarBusquedaAlumnos();   
     setCargandoCursos(true)
     setEstadoImpresion("1")
     setHuboError(false)
@@ -163,6 +159,9 @@ export default function Cursos({match,history}){
         setMotivoSolicitudSeleccion(-1)
         setRangoObreroAbreviadoSeleccion(-1)
         setEstadoBalanceSeleccion(-1)
+
+        setIini(0)
+        setIfin(anchoPaginacion-1)
 
         buscarCursos() 
        
@@ -572,11 +571,6 @@ const handleChangeInputNombre = (e)=> {
     }
  }
 
- const pepe = (e)=> {
-    setTextoNombre(e.target.value)
-    console.log('pepe',e.target.value)
- }
-
  const handleChangeInputLocalidad = (e)=> {
     
     /* if (e.target.value.trim() === "" ){
@@ -932,6 +926,10 @@ const ministeriosDeLosObreros = ()=>{
         console.log(err)
     }
 
+}
+
+const ejecutarImprimirMinistros = ()=>{
+    imprimirMinistros(cursosAmostrar)
 }
 
 const provinciasDeLosCursos = ()=>{
@@ -1351,6 +1349,10 @@ const handleChangeSelectEstado = (e)=> {
 
 }
 
+const finalizarIngresosIgl = ()=>{
+    setIglesiaSeleccionadaIngresos(null)
+}
+
 const handleChangeSelectRangoAbreviado = (e)=> {
     
    /* if (e.target.value === "-1" ){
@@ -1583,7 +1585,7 @@ return(
             {/*<OtrasIglesiasObrero obrero={obreroSeleccionadoCredencial}/>*/}             
         </Modal>} 
 
-        <div className="bg-blue text-whitexxx p-4 rounded ml-auto mr-auto"> 
+        <div className="bg-blue text-whitexxx p-4 rounded ml-auto mr-auto mb-4"> 
         {cuatrimestreActivo && <Cabecera cuatrimestreActivo={cuatrimestreActivo} 
                                          iniciarCrearUsuario={iniciarCrearUsuario}
                                          refrescarLista={refrescarLista}/>}
@@ -1646,6 +1648,7 @@ return(
                     ordenarFechaAlta = {ordenarFechaAlta}
                     setOrdenarFechaAlta = {setOrdenarFechaAlta}
                     funcionOrden = {funcionOrden}
+                    ejecutarImprimirMinistros = {ejecutarImprimirMinistros}
                 />
             }
             {
@@ -1706,7 +1709,8 @@ return(
             </div>
                
             }   
-        {parametros.vista !="estadisticas" && <div className="flex f-col centro-w300 mt-4 res-lista">
+        {parametros.vista !="estadisticas" && 
+            <div className="flex f-col centro-w300 mt-4 res-lista">
                 <div>
                     <span className="text-xl">{cursosAmostrar.length}</span><span className="text-large">{cursosAmostrar.length== 1 ? ` registro encontrado`:` registros encontrados`}</span> 
                 </div>
@@ -1781,8 +1785,17 @@ return(
                 setObreroSeleccionadoCredencial={setObreroSeleccionadoCredencial}
                 iglesiasObrero={iglesiasObrero}
                 buscandoIglesiasObrero={buscandoIglesiasObrero}
+                setIglesiaSeleccionadaIngresos = {setIglesiaSeleccionadaIngresos}
+                iglesiaSeleccionadaIngresos = {iglesiaSeleccionadaIngresos}
+                finalizarIngresosIgl = {finalizarIngresosIgl}
                 />
       </div>
+      { cursosAmostrar.length > 0 && <PiePagina>
+            <div className="flex f-col items-center">
+                <Paginacion anchoPaginacion={anchoPaginacion} longitud={cursosAmostrar.length} paginar={paginar} iIni={iIni} iFin={iFin}/>
+            </div>
+      </PiePagina>}
+
      </Main>
 )
     }
@@ -1869,7 +1882,6 @@ function TipoCursos({cambiarTipoCurso}){
 }*/
 
 function listarUltimoCursosCreados(cursos,setUltimosCursosCreados){
-    console.log(cursos)
     const cursos_filtrados = cursos.map(item=>{return {id:item.nro_curso,
                                                        materia:item.campo_auxiliar,
                                                        profesor:item.nombre,
@@ -2036,7 +2048,10 @@ function Tabla({vista,
                 obreroSeleccionadoCredencial,
                 setObreroSeleccionadoCredencial,
                 iglesiasObrero,
-                buscandoIglesiasObrero
+                buscandoIglesiasObrero,
+                setIglesiaSeleccionadaIngresos,
+                iglesiaSeleccionadaIngresos,
+                finalizarIngresosIgl
                 }){
 
 const gestionarChecks = (marcarTodos)=>{
@@ -2151,40 +2166,11 @@ case 'ministros':
     </>        
       case 'iglesias':
         return <>
-            {/*<div className="mt-6 flex f-row">
-               <TextoInput nombre={'Nombre_Igl'} textoid={"texto-nombre"} texto={texto} onchange={handleChangeInputNombre} limpiarTexto={limpiarNombre}/>
-               <TextoInput nombre={'Pastor'} textoid={"texto-pastor"} texto={textoPastor} onchange={handleChangeInputPastor} limpiarTexto={limpiarPastor}/>
-               <TextoInput nombre={'Encargado'} textoid={"texto-encargado"} texto={textoEncargado} onchange={handleChangeInputEncargado} limpiarTexto={limpiarEncargado}/>
-               <TextoInput nombre={'Ubicación'} textoid={"texto-localidad"} texto={textoLocalidad} onchange={handleChangeInputLocalidad} limpiarTexto={limpiarLocalidad}/>
-            </div>
-            <div className="mt-6 flex f-row">
-            <div className="flex f-row">
-                    { tipoIglesiaSeleccion!="-1" && <button><FontAwesomeIcon 
-                                className="ic-abm"
-                                icon={faWindowClose} 
-                                onClick={limpiarTipoIglesia}/>
-                            </button>}
-                    <span className="cursor-pointer p-2 text-small botonNc w-150  inline-block-1 border-bottom-dotted-gray text-left color-gray" >
-                                Tipo de iglesia
-                    </span>
-                    <Seleccionador  nombre='Todos' valor={tipoIglesiaSeleccion} onchange={handleChangeSelectTipoIgl} vector = {tiposIgl}/>
-               </div>
-            <div className="flex f-row">
-                { estadoBalanceSeleccion!="-1" && <button><FontAwesomeIcon 
-                                className="ic-abm"
-                                icon={faWindowClose} 
-                                onClick={limpiarEstadoBalance}/>
-                            </button>}
-                    <span className="cursor-pointer p-2 text-small botonNc w-150  inline-block-1 border-bottom-dotted-gray text-left color-gray" >
-                                Estado del balance
-                    </span>
-                    <SeleccionadorBalance  nombre='Todos' valor={estadoBalanceSeleccion} onchange={handleChangeSelectEstadoBalance} vector = {estadoBalances}/>
-               </div>
-               </div>*/}
         <table className="table mt-8 table-cent">
-            <thead className="text-white ">
+            <thead>
                 <tr>
-                        <div className="border-bottom-dotted-gray color-63 fw-x text-large">
+                    <th>
+                        <div className="color-63 fw-x text-large">
                             <span className={ orden == 'nombre_igl' ? "filas-lista-nwx cursor-pointer ti-nombre orden-activo" : "filas-lista-nwx cursor-pointer ti-nombre" } onClick={()=>funcionOrden('nombre_igl')} >
                                     Nombre
                             </span>                        
@@ -2199,7 +2185,9 @@ case 'ministros':
                                         Acciones
                             </span>
                         </div>
-                    </tr>
+                    </th>
+                    <th className="pl-4"></th>
+                </tr>
             </thead>
             <tbody>
             {
@@ -2210,26 +2198,45 @@ case 'ministros':
                 })
                 .map(curso => {
                 return (
-                    <tr onClick={()=>{setIglesiaSeleccionada(curso.id_iglesia);
-                        toggle()}} key={curso.id_iglesia} className="border-bottom-solid cursor-pointer">
-                        <div className="border-bottom-dotted-gray">
-                            
-                            <span className="filas-lista-nw ti-nombre" >
-                                    {curso.nombre_igl}
-                            </span>         
-              
-                            <span className="filas-lista-nw ti-pastor">{curso.pastor}</span>
-                            <span className="filas-lista-nw ti-encargado">{curso.encargado}</span>
-                            <span className="filas-lista-nw ti-domicilio">{curso.domicilio}</span>
-                            <span className="filas-lista-nw ti-ubicacion">{curso.ubicacion}</span>
-                            <span className="filas-lista-nw ti-telefono">{curso.telefono}</span>
-                            <span className="filas-lista-nw ti-tipo">{curso.tipo_iglesia}</span>
-                            <span className="filas-lista-nw ti-balance">{curso.balance}</span>
-                            <span onClick={()=>{setIglesiaSeleccionada(curso.id_iglesia);
-                                            toggle()}} title={`Abrir la ficha de la iglesia ${curso.nombre_igl}`} className="filas-lista-nw cursor-copy p-iconos-listas ti-acciones" >
-                                        <FontAwesomeIcon className="cursor-pointer"  icon={faEdit}/>
-                            </span>
-                        </div>
+                    <tr className="border-bottom-solid cursor-pointer">
+                        <td onClick={()=>{setIglesiaSeleccionada(curso.id_iglesia);
+                        toggle()}} key={curso.id_iglesia} >
+                            <div>
+                                
+                                <span className="filas-lista-nw ti-nombre" >
+                                        {curso.nombre_igl}
+                                </span>         
+                
+                                <span className="filas-lista-nw ti-pastor">{curso.pastor}</span>
+                                <span className="filas-lista-nw ti-encargado">{curso.encargado}</span>
+                                <span className="filas-lista-nw ti-domicilio">{curso.domicilio}</span>
+                                <span className="filas-lista-nw ti-ubicacion">{curso.ubicacion}</span>
+                                <span className="filas-lista-nw ti-telefono">{curso.telefono}</span>
+                                <span className="filas-lista-nw ti-tipo">{curso.tipo_iglesia}</span>
+                                <span className="filas-lista-nw ti-balance">{curso.balance}</span>
+                            </div>
+                            { iglesiaSeleccionadaIngresos && iglesiaSeleccionadaIngresos == curso.id_iglesia && <div>
+                                <div className="flex f-row justify-center">
+                                    <BalancesYdiezmos id_iglesia={curso.id_iglesia}/>
+                                    <IngresosIgl id_iglesia={curso.id_iglesia} finalizar={finalizarIngresosIgl}/>
+                                </div>
+                            </div>}
+                        </td>
+                        <td className="text-center"> 
+                            <div className="flex f-col">
+                                {  
+                                    <span onClick={()=>{setIglesiaSeleccionadaIngresos(curso.id_iglesia)}}
+                                        title={`Ver los ingresos del último año`} className="filas-lista-nw cursor-copy p-iconos-listas" >
+                                        <FontAwesomeIcon className="cursor-pointer"  icon={faSearchDollar}/>
+                                    </span>}
+                                
+                                { iglesiaSeleccionadaIngresos == curso.id_iglesia &&
+                                    <span onClick={finalizarIngresosIgl}
+                                        title={`Cerrar ingresos`} className="filas-lista-nw cursor-copy p-iconos-listas" >
+                                        <FontAwesomeIcon className="cursor-pointer"  icon={faWindowClose}/>
+                                    </span>}     
+                            </div>
+                        </td>
                     </tr>
                 )
                 })
@@ -2237,100 +2244,13 @@ case 'ministros':
             </tbody>
         </table>
         </>
-   case 'iglesias_old':
-    return <table className="table mt-6">
-    <thead className="bg-blue-500 text-white ">
-       <tr className="titulo-lista">
-            <th scope="col"><TextoInput nombre={'Nombre_Igl'} textoid={"texto-nombre"} texto={texto} onchange={handleChangeInputNombre} limpiarTexto={limpiarNombre}/></th>
-            <th scope="col"><TextoInput nombre={'Pastor'} textoid={"texto-nombre"} texto={textoPastor} onchange={handleChangeInputPastor} limpiarTexto={limpiarProvincia}/></th>
-            <th scope="col"><TextoInput nombre={'Encargado'} textoid={"texto-nombre"} texto={textoEncargado} onchange={handleChangeInputEncargado} limpiarTexto={limpiarEncargado}/></th>
-            <th scope="col">Domicilio </th>
-            <th scope="col"><TextoInput nombre={'Ubicación'} textoid={"texto-localidad"} texto={textoLocalidad} onchange={handleChangeInputLocalidad} limpiarTexto={limpiarLocalidad}/></th>
-            <th scope="col">Teléfono</th>
-            <th scope="col"><Seleccionador  nombre='Tipo' valor={tipoIglesiaSeleccion} onchange={handleChangeSelectTipoIgl} vector = {tiposIgl}/></th>
-            <th colspan="2" className="pad-list1" scope="col"><span>Acciones</span></th>
-        </tr>
-    </thead>
-    <tbody>
-    {
-        cursosAmostrar
-        .map((item,index)=>{return {...item,indice:index+1}})
-        .filter((item,index)=>{
-            return index>= iIni && index<=iFin
-        })
-        .map(curso => {
-        return (
-            <tr key={curso.id_iglesia} className="bg-blueTabla border-bottom-solid">
-                <td onClick={()=>{setIglesiaSeleccionada(curso.id_iglesia);
-                                 toggle()}} className="filas-lista cursor-pointer" >
-                        {curso.nombre_igl}
-                </td>                        
-                <td className="filas-lista">{curso.pastor}</td>
-                <td className="filas-lista">{curso.encargado}</td>
-                <td className="filas-lista">{curso.domicilio}</td>
-                <td className="filas-lista">{curso.ubicacion}</td>
-                <td className="filas-lista">{curso.telefono}</td>
-                <td className="filas-lista">{curso.tipo_iglesia}</td>
-                <td onClick={()=>{setIglesiaSeleccionada(curso.id_iglesia);
-                                 toggle()}} title={`Abrir la ficha de la iglesia ${curso.nombre_igl}`} className="filas-lista cursor-copy p-iconos-listas width-35" >
-                            <FontAwesomeIcon className="cursor-pointer"  icon={faEdit}/>
-                </td>
-             </tr>
-           )
-        })
-    }
-    </tbody>
-</table>
-
-    case 'diezmos' : 
-        return <table className="table mt-12">
-        <thead className="bg-blue-500 text-white ">
-           <tr className="titulo-lista">
-                <th scope="col">Diezmo</th>
-                <th scope="col">Edad</th>
-                <th scope="col">Localidad</th>
-                <th scope="col">Provincia </th>
-                <th scope="col">Ministerio</th>
-                <th scope="col">Cumpleaños</th>
-                <th colspan="2" className="pad-list1" scope="col"><span>Acciones</span></th>
-            </tr>
-        </thead>
-        <tbody>
-        {
-            cursosAmostrar
-            .map((item,index)=>{return {...item,indice:index+1}})
-            .filter((item,index)=>{
-                return index>= iIni && index<=iFin
-            })
-            .map(curso => {
-            return (
-                <tr key={curso.id_obrero} className="bg-blueTabla border-bottom-solid">
-                    <td title={`Modificar el estado de la solicitud de ${curso.nombre_obrero}`} onClick={()=>{setUsuarioSeleccionado(curso);
-                                 toggle()}} title={curso.descripcion} className="filas-lista-principal cursor-pointer" >
-                            {curso.nombre_obrero}
-                    </td>                        
-                    <td className="filas-lista">{curso.edad}</td>
-                    <td className="filas-lista">{curso.localidad}</td>
-                    <td className="filas-lista">{curso.provincia}</td>
-                    <td className="filas-lista">{curso.ministerio}</td>
-                    <td className="filas-lista">{curso.cumpleaños}</td>
-                    <td onClick={()=>{setUsuarioSeleccionado(curso);
-                                 toggle()}} title={`Modificar el estado de la solicitud de ${curso.nombre_obrero}`} className="filas-lista cursor-copy p-iconos-listas width-35" >
-                            <FontAwesomeIcon className="cursor-pointer"  icon={faEdit}/>
-                    </td>   
-                 </tr>
-               )
-            })
-        }
-        </tbody>
-    </table>
-
 case 'credenciales':
     return <>
     <table className="table mt-8 table-cent">
         <thead className="text-white ">
             <tr>
-                    <div className="border-bottom-dotted-gray color-63 fw-x text-large">
+                <th>
+                    <div className="color-63 fw-x text-large">
                         <span className={ orden == 'nombre' ? "filas-lista-nwx cursor-pointer ticr-nombre orden-activo" : "filas-lista-nwx cursor-pointer ticr-nombre"} onClick={()=>funcionOrden('nombre')} >
                                 Nombre
                         </span>               
@@ -2339,9 +2259,9 @@ case 'credenciales':
                         <span className={ orden == 'Motivo' ? "filas-lista-nwx p-2 ticr-motivo cursor-pointer orden-activo" : "filas-lista-nwx p-2 ticr-motivo cursor-pointer"} onClick={()=>funcionOrden('Motivo')}>Motivo</span>
                         <span className={ orden == 'f_solicitud' ? "filas-lista-nwx p-2 ticr-fecha cursor-pointer orden-activo" : "filas-lista-nwx p-2 ticr-fecha cursor-pointer" } onClick={()=>funcionOrden('f_solicitud')}>Fecha</span>
                         <span className={ orden == 'estado' ? "filas-lista-nwx p-2 cursor-pointer orden-activo" : "filas-lista-nwx p-2 ticr-estado cursor-pointer"} onClick={()=>funcionOrden('estado')}>Estado</span>
-
                     </div>
-                </tr>
+                </th>
+            </tr>
         </thead>
         <tbody>
         {
@@ -2358,18 +2278,20 @@ case 'credenciales':
                     }
                     setSolicitudSeleccionada(curso);
                     toggle()}} key={curso.id_solicitud} className="border-bottom-solid cursor-pointer">
-                    <div className="border-bottom-dotted-gray">
-                        
-                        <span className="filas-lista-nw ticr-nombre" >
-                                {curso.nombre}
-                        </span>         
-          
-                        <span className="filas-lista-nw ticr-rango">{curso.rango}</span>
-                        <span className="filas-lista-nw ticr-region">{curso.region}</span>
-                        <span className="filas-lista-nw ticr-motivo">{curso.Motivo}</span>
-                        <span className="filas-lista-nw ticr-fecha">{curso.f_solicitud}</span>
-                        <span className="filas-lista-nw ticr-estado">{curso.estado}</span>
-                    </div>
+                    <td>    
+                        <div>
+                            
+                            <span className="filas-lista-nw ticr-nombre" >
+                                    {curso.nombre}
+                            </span>         
+            
+                            <span className="filas-lista-nw ticr-rango">{curso.rango}</span>
+                            <span className="filas-lista-nw ticr-region">{curso.region}</span>
+                            <span className="filas-lista-nw ticr-motivo">{curso.Motivo}</span>
+                            <span className="filas-lista-nw ticr-fecha">{curso.f_solicitud}</span>
+                            <span className="filas-lista-nw ticr-estado">{curso.estado}</span>
+                        </div>
+                    </td>
                 </tr>
             )
             })
@@ -2377,76 +2299,23 @@ case 'credenciales':
         </tbody>
     </table>
     </>        
-    case 'credenciales_old' :
-        return <table className="table mt-6">
-        <thead className="bg-blue-500 text-white ">
-           <tr className="titulo-lista">
-                <th scope="col"><TextoInput nombre={'Nombre'} texto={texto} onchange={handleChangeInputNombre} limpiarTexto={limpiarNombre}/></th>
-                <th scope="col"><Seleccionador  nombre='Rango' valor={rangoObreroSeleccion} onchange={handleChangeSelectRango} vector = {rangos}/></th>
-                <th scope="col">Región</th>
-                <th scope="col"><Seleccionador  nombre='Motivo' valor={motivoSolicitudSeleccion} onchange={handleChangeSelectMotivo} vector = {motivos}/></th>
-                <th scope="col">F_solicitud</th>
-                <th scope="col"><Seleccionador  nombre='Estado' valor={estadoCredencialSeleccion} onchange={handleChangeSelectEstado} vector = {estados}/></th>
-                <th colspan="2" className="pad-list1" scope="col"><span>Acciones</span></th>
-            </tr>
-        </thead>
-        <tbody>
-        {
-            cursosAmostrar
-            .map((item,index)=>{return {...item,indice:index+1}})
-            .filter((item,index)=>{
-                return index>= iIni && index<=iFin
-            })
-            .map(curso => {
-            return (
-                <tr key={curso.id_solicitud} className="bg-blueTabla border-bottom-solid">
-                    {curso.estado && <td title={`Autorizar impresion para ${curso.nombre}`} 
-                        onClick={()=>{
-                            if (!curso.estado.includes('Revisi')){
-                                return
-                            }
-                            setSolicitudSeleccionada(curso);
-                            toggle()}}
-
-                            className="filas-lista-principal cursor-pointer" >
-                            {curso.nombre}
-                        </td> }                       
-                    <td className="filas-lista">{curso.rango}</td>
-                    <td className="filas-lista">{curso.region}</td>
-                    <td className="filas-lista">{curso.Motivo}</td>
-                    <td className="filas-lista">{curso.f_solicitud}</td>
-                    <td className="filas-lista">{curso.estado}</td>
-                    {curso.estado && <td onClick={()=>{
-                        if (!curso.estado.includes('Revisi')){
-                            return
-                        }
-                                    setSolicitudSeleccionada(curso);
-                                 toggle()}} 
-                                 title={`Autorizar impresion para ${curso.nombre}`} 
-                                 className="filas-lista cursor-copy p-iconos-listas width-35" >
-                            {curso.estado.includes('Revisi') && <FontAwesomeIcon className="cursor-pointer"  icon={faEdit}/>}
-                    </td>}   
-                 </tr>
-               )
-            })
-        }
-        </tbody>
-    </table>
-
     case 'ingresos' :
 
         return <table className="table mt-8 table-cent">
             <thead className="text-white ">
                 <tr>
-                        <div className="border-bottom-dotted-gray color-63 fw-x text-large">
+                    <th>
+                        <div className="color-63 fw-x text-large">
                             <span className="filas-lista-nwx p-2 ti-fecha">Fecha</span>
                             <span className="filas-lista-nwx p-2 ti-contribuyente">Contribuyente</span>
-                            <span className="filas-lista-nwx p-2 ti-titular">Titular</span>
+                            <span className="filas-lista-nwx p-2 ti-detalle">Titular</span>
                             <span className="filas-lista-nwx p-2 ti-domicilio">Domicilio</span>
                             <span className="filas-lista-nwx p-2 ti-provincia">Provincia</span>
+                            <span className="filas-lista-nwx p-2 ti-provincia">Detalle</span>
                             <span className="filas-lista-nwx p-2 ti-monto">Monto</span>
                         </div>
-                    </tr>
+                    </th>
+                </tr>
             </thead>
         <tbody>
         {
@@ -2458,14 +2327,17 @@ case 'credenciales':
             .map((curso,index) => {
             return (
                 <tr key={curso.comprobante+''+index} className="border-bottom-solid cursor-pointer">
-                    <div className="border-bottom-dotted-gray">
-                        <span className="filas-lista-nw ti-fecha">{curso.fecha}</span>
-                        <span className="filas-lista-nw ti-contribuyente">{curso.contribuyente}</span>
-                        <span className="filas-lista-nw ti-titular">{curso.titular}</span>
-                        <span className="filas-lista-nw ti-domicilio">{curso.domicilio}</span>
-                        <span className="filas-lista-nw ti-provincia">{curso.provincia}</span>
-                        <span className="filas-lista-nw ti-monto">{curso.monto}</span>
-                    </div>
+                    <td>
+                        <div>
+                            <span className="filas-lista-nw ti-fecha">{curso.fecha}</span>
+                            <span className="filas-lista-nw ti-contribuyente">{curso.contribuyente}</span>
+                            <span className="filas-lista-nw ti-detalle">{curso.titular}</span>
+                            <span className="filas-lista-nw ti-domicilio">{curso.domicilio}</span>
+                            <span className="filas-lista-nw ti-provincia">{curso.provincia}</span>
+                            <span className="filas-lista-nw ti-provincia">{curso.det_rc}</span>
+                            <span className="filas-lista-nw ti-monto">{curso.monto}</span>
+                        </div>
+                    </td>
                 </tr>
             )
             })
@@ -2559,12 +2431,11 @@ function completarAniosMeses(setDias,setMeses,setAnios,setSeleccionIngresos){
     const anios_aux = [];
     const meses_aux = [];
 
-
-
         const fecha_menos_3 = obtenerFechaDiamenosN(3)
+        const dia_d_aux = fecha_menos_3.desglose.dia;
 
-        setSeleccionIngresos({dia_d:fecha_menos_3.desglose.dia,
-                             dia_h:dia_actual,
+        setSeleccionIngresos({dia_d:dia_d_aux < 10 ? `0${dia_d_aux}` : dia_d_aux ,
+                             dia_h:dia_actual < 10 ? `0${dia_actual}` : dia_actual,
                              mes_d:fecha_menos_3.desglose.mes,
                              mes_h:mes_actual,
                              anio_d:fecha_menos_3.desglose.anio,
@@ -2619,7 +2490,6 @@ function cargarVectorDias(setDias) {
 
 function TotalIngresos({seleccion,registros,meses}){
 
-    console.log(registros)
     // este algoritmo es complejo porque hay que convertir los montos que llegan como strings en formato "xx,xxx.xx" y no se pueden sumar
     // para poder sumarlos primero hay que remover la coma y dejar el numero plano con los 2 decimales que ya trae con punto decimal 
     // luego con parseFloat lo transfomamos de string a número
@@ -2778,6 +2648,12 @@ function Spinner({item, todos}) {
         return <Main center><Loading/><span className="cargando">Buscando balances y diezmos...</span></Main>
     }
 
+    if (!balances.some(item=>item.estado == 1 ) && !diezmos.some(item=>Number(item.diezmo)>0 )){
+        return <div className="listado-al text-center" >
+                <span className="p-4 color-tomato inline-block-1 text-large">No se encontraron diezmos ni balances</span>
+            </div> 
+    }
+
     return <div className="FormAbmContainer flex f-row ml-2 justify-center mt-4">
             <div className="flex f-col">
                 <span className="text-small text-center">Balances</span>
@@ -2848,7 +2724,6 @@ function Spinner({item, todos}) {
         try{
             const respuesta = await Axios.post(`/api/tablasgenerales/credenciales/solicitarimpresion`,objetoAenviar);
 
-            console.log('respuesta',respuesta)
             return respuesta.data.mensaje;
 
         }catch(err){
@@ -3003,7 +2878,8 @@ function CabeceraMinistros({setCrearObrero,toggle,setEnviarCorreo,iniciarEnviarC
     rangosAbreviados,handleChangeSelectRangoAbreviado,rangoObreroAbreviadoSeleccion,
     limpiarEstadoImpresionListaMinistros,estadoCredencialSeleccionListaMinistros,estadosCredencialListaMinistros,
     handleChangeSelectCredencialListaMinistros,cursosAExportar,
-    usuario, soloConFechaAlta, setSoloConFechaAlta,ordenarFechaAlta,setOrdenarFechaAlta,funcionOrden
+    usuario, soloConFechaAlta, setSoloConFechaAlta,ordenarFechaAlta,setOrdenarFechaAlta,funcionOrden,
+    ejecutarImprimirMinistros
     }){
  
 return  <div className="flex f-col">
@@ -3016,7 +2892,9 @@ return  <div className="flex f-col">
                 <span onClick={iniciarEnviarCorreo} className="cursor-pointer botonNc ml-6" >
                     <FontAwesomeIcon onClick={()=>{setEnviarCorreo(true);toggle()}} className="color-tomato" icon={faEnvelopeOpen}/> Enviar un mail
                 </span>       
-
+                <span onClick={ejecutarImprimirMinistros} className="cursor-pointer botonNc ml-6" >
+                    <FontAwesomeIcon onClick={()=>{ejecutarImprimirMinistros()}} className="color-tomato" icon={faEnvelopeOpen}/> Crear PDF
+                </span> 
                 <CSVLink
                         data={cursosAExportar}
                         filename={`ministros-region${usuario.id_region}.csv`}
@@ -3082,13 +2960,13 @@ return  <div className="flex f-col">
                         </div>
                     </div>   
                     <div className="flex f-row items-center">
-                        <span title="Mostrar u ocultar filas según si hay fecha de último ascenso" className="cursor-pointer p2-2 text-small botonNc w-150  inline-block-1 border-bottom-dotted-gray text-left color-gray" >
-                                    Tiene fecha de ascenso
+                        <span onClick={()=>{setSoloConFechaAlta(!soloConFechaAlta)}} title="Mostrar u ocultar filas según si hay fecha de último ascenso" className="cursor-pointer p2-2 text-small botonNc w-150  inline-block-1 border-bottom-dotted-gray text-left color-gray" >
+                                    Tiene fecha de ascenso 
                         </span>
                         <div title="Mostrar u ocultar filas según si hay fecha de último ascenso" className="flex f-row">
                             <input type="checkbox" checked={soloConFechaAlta} onClick={()=>{setSoloConFechaAlta(!soloConFechaAlta)}}/>
                         </div>
-                        <span title="Ordenar por fecha de último ascenso" className="cursor-pointer p2-2 text-small botonNc ml-4 mr-2  inline-block-1 border-bottom-dotted-gray text-left color-gray" >
+                        <span onClick={()=>{funcionOrden('ult_ascenso')}} title="Ordenar por fecha de último ascenso" className="cursor-pointer p2-2 text-small botonNc ml-4 mr-2  inline-block-1 border-bottom-dotted-gray text-left color-gray" >
                                     Ordenar por F/A
                         </span>
                         <div className="flex f-row">

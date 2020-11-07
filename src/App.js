@@ -7,7 +7,7 @@ import Personal from './Vistas/Personal';
 import Login from './Vistas/Login';
 import Loading from './componentes/Loading';
 import Error from './componentes/Error';
-import {AlumnoProvider, useAlumno } from './Context/alumnoContext'; // importo proveedor de contexto y luego envuelvo a la aplicación en el mismo
+import {ContextProviderGlobal, useContextoGlobal } from './Context/contextoGlobal'; // importo proveedor de contexto y luego envuelvo a la aplicación en el mismo
 import Axios from 'axios';
 import {setToken, deleteToken, getToken, initAxiosInterceptors} from './Helpers/auth-helpers'
 import {fechaActual,compararFechas} from './Helpers/fechas';
@@ -35,15 +35,11 @@ function App() {
   const [error,setError] = useState(null);
   const [hora,setHora] = useState(null);
   const [reinicioLogin,setReinicioLogin]=useState(0)
-  const {alumno,
-        setAlumno,
-        mostrarBusquedaAlumnos,
-        reinicializarAlumno,
-        mensaje,
+  const {mensaje,
         reinicializarMensaje,
         cuatrimestreActivo, cambiarCuatrimestreActivo,
         setearUsuario,
-        contadorOperacionesGlobales} = useAlumno();
+        contadorOperacionesGlobales} = useContextoGlobal();
 
   useEffect(()=>{
 
@@ -100,7 +96,6 @@ function App() {
 
   function logout(){
       setUsuario(null);
-      reinicializarAlumno()
       deleteToken();
   }
 
@@ -141,7 +136,6 @@ async function login(username,password){
 
       setUsuario(data.usuario);
 
-      console.log('miscelanea',data.usuario)
       setearUsuario(data.usuario); // para exponerlo en el context
       setToken(data.token)
       setError(null)
@@ -179,12 +173,10 @@ async function login(username,password){
     <BrowserRouter>
     <div className="Main center" onMouseUp={monitorearClicks}>
       <Nav usuario = {usuario} logout={logout} cuatrimestreActivo={cuatrimestreActivo}/>
-      {/*usuario && <BuscarAlumnos/>*/} 
-  {/* <LinkReferencias/> */}
       <Error mensaje={error} esconderError={esconderError}/>
       <Error mensaje={mensaje} esconderError={reinicializarMensaje}/>
       { usuario ? 
-          <div className= { alumno.id_misionero ?  "flex flex-row mt-80" : "flex flex-row mt-80" }>
+          <div className= { usuario.id_misionero ?  "flex flex-row mt-80" : "flex flex-row mt-80" }>
                 <LoginRoutes mostrarError={mostrarError}/>
                 <Redirect to="/regiones/estadisticas" />
           </div>             
@@ -194,11 +186,6 @@ async function login(username,password){
             <Redirect to="/login" login={login}/> 
           </div>
          }
-        
-      
-       
-    
-      { /*<div>{JSON.stringify(usuario)}</div> */}
       </div>
     </BrowserRouter>
   );
@@ -208,9 +195,9 @@ async function login(username,password){
 // envuelvo a la aplicación con un proveedor de contexto para que la usen los componentes
 // hijos.
 export default ()=> 
-<AlumnoProvider>  
+<ContextProviderGlobal>  
     <App></App>
-</AlumnoProvider>
+</ContextProviderGlobal>
 
 function LoginRoutes({mostrarError, logout}){
   return (
@@ -334,8 +321,6 @@ function confirmarTiempoInactividadAceptado(){
 
         const prueba_numero = Number(existe_tcustom)
         
-        console.log('typeof(prueba_numero)',typeof(prueba_numero))
-
         if (typeof(prueba_numero)==='number'){
             tiempo_en_segundos_inactividad = prueba_numero;
         }

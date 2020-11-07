@@ -11,15 +11,13 @@ export default function FormularioContactoAlumno({handleSubmit,telefono, celular
                              email: email ? email : '',
                              email_secundario: email_secundario ? email_secundario : ''}
 
-    console.log('initialValues wwww',initialValuesc)
-
     const validationSchema = Yup.object({
         telefono:Yup.string().required('Required'),
         celular: Yup.string().required('Required')
     })
 
     const onSubmit = values =>{
-        console.log("buenisimo")
+        console.log("Submit")
     }
 
     // formik contiene el estado del formulario en formik.values

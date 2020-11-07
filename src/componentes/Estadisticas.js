@@ -4,7 +4,6 @@ import Axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowClose, faUser, faCircle, faEdit,faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 import Loading from '../componentes/Loading';
-import AbmAula from '../abms/Abm-aula'
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Estadisticas({usuario}){
@@ -80,35 +79,35 @@ export default function Estadisticas({usuario}){
 
 function Spinner({item, todos}) {
 
-    const maximo = todos.map(item=>item.cantidad).sort((a,b)=>b-a)[0]
-    let nueva_altura = (Number(maximo)) + 20 // antes era 140
-
-    if (nueva_altura > 150) {
-        nueva_altura = 150
-    }
-
-    let alto = Number(item.cantidad)
-
-    if (alto==0){
-        alto = 1
-    }
-
-    const total = todos.reduce((ac,item)=>{return ac + Number(item.cantidad) },0)
-    const porcentaje = ((Number(item.cantidad)/Number(total))*100).toFixed(1)
-
-    return (
-        <div>
-      <svg width="70" height={nueva_altura} fontFamily="sans-serif" fontSize="10" textAnchor="end">
-  
-    <rect  x="0" y={nueva_altura-20-alto} fill={alto==1 ? "red" : "steelblue"} width="60" height={alto}></rect>
-    <text fontSize="20px" fill="black" x="50" y={nueva_altura}>{item.cantidad}</text>
-    <text fill="black" fontSize="15px" x="50" y={nueva_altura-50}>{porcentaje} %</text>
-
-   </svg>
-        </div>
-
-    );
-  }
+    /* const maximo = todos.map(item=>item.cantidad).sort((a,b)=>b-a)[0]
+     let nueva_altura = (Number(maximo)) + 20 // antes era 140
+ 
+     if (nueva_altura > 150) {
+         nueva_altura = 150
+     }
+ */
+     let alto = Number(item.cantidad)
+ 
+     if (alto==0){
+         alto = 1
+     }
+ 
+     const total = todos.reduce((ac,item)=>{return ac + Number(item.cantidad) },0)
+     const porcentaje = ((Number(item.cantidad)/Number(total))*100).toFixed(1)
+ 
+     return (
+         <div>
+       <svg width="70" height={140} fontFamily="sans-serif" fontSize="10" textAnchor="end">
+   
+     <rect  x="0" y={100-porcentaje * 3} fill={alto==1 ? "red" : "steelblue"} width="60" height={porcentaje * 3}></rect>
+     <text fontSize="20px" fill="black" x="50" y={50}>{item.cantidad}</text>
+     <text fill="black" fontSize="15px" x="50" y={120}>{porcentaje} %</text>
+ 
+    </svg>
+         </div>
+ 
+     );
+   }  
 
  function Porcentajes({todos}) {
 

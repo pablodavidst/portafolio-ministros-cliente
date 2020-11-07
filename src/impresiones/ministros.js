@@ -1,16 +1,16 @@
-import React from 'react';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import Axios from 'axios';
 import {_imagenLogo} from '../imagenesBase64/logo'
 import Swal from 'sweetalert2';
 
-export function imprimir(periodo,alumno,cursadas){
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+export function imprimir(cursadas){
     try{
-        generarComprobante(periodo,alumno,cursadas)
+        generarDocumento(cursadas)
     }catch(err){
 
-            const mensaje_html = `<p>Hubo un error al generar el comprobante</p><p>${err}</p>`
+            const mensaje_html = `<p>Hubo un error al generar el documento</p><p>${err}</p>`
 
             Swal.fire({
                 html:mensaje_html,
@@ -20,16 +20,18 @@ export function imprimir(periodo,alumno,cursadas){
         }
 }
 
-function generarComprobante(periodo,alumno,cursadas) {
+function generarDocumento(cursadas) {
 
     const fecha = fechaDelDia();
 
-    var cursadas_mapeadas = cursadas.map(item => { return { descripcion: item.descripcion, profesor: item.profesor, diahora: item.DiaHora, aula: item.Aula, fecha: item.columna.substring(0, 11) + '' + item.columna.substring(20, 25)}}) // uso .map para transformar un array de objetos a un nuevo array de objetos pero elijiendo los campos.
-                                                                                    // El array cursadas que viene como propiedad del abm de alumnos trae las cursadas con muchos campos pero solo queremos 4 campos para armar la grilla
+    console.log('cursadas',cursadas)
+    var cursadas_mapeadas = cursadas.map(item => { return { nombre_obrero: item.nombre_obrero, rango: item.rango}}) // uso .map para transformar un array de objetos a un nuevo array de objetos pero elijiendo los campos.
+                                            // El array cursadas que viene como propiedad del abm de alumnos trae las cursadas con muchos campos pero solo queremos 4 campos para armar la grilla
 
     var cursadas_mapeadas_vector = cursadas_mapeadas.map(item=>{return Object.values(item)}) // uso .map para transformar un array de objetos en un nuevo array pero ahora no de objetos sino de arrays porque apliquè la funciòn Object.values. Hago esto porque para armar el pdf necesito un array de arrays y no array de objetos
     
-    cursadas_mapeadas_vector.unshift([{ text: 'Materia', style: 'tableHeader' }, { text: 'Profesor', style: 'tableHeader' }, { text: 'Día y hora', style: 'tableHeader' }, { text: 'Aula', style: 'tableHeader' }, { text: 'Fecha Inscripción', style: 'tableHeader' }])
+    cursadas_mapeadas_vector.unshift([{ text: 'nombre_obrero', style: 'tableHeader' }, 
+                                        { text: 'rango', style: 'tableHeader' }])
 
     var docDefinition = {
 
@@ -58,14 +60,14 @@ function generarComprobante(periodo,alumno,cursadas) {
                                 margin: [0, 5],
 
                                 columns: [
-                                    { text: `Alumno:`, decoration: 'underline', width: 60, bold: true }, { text: `(${alumno.id_alumno}) ${alumno.alumno}`, style: '' },
+                                    { text: `Alumno:`, decoration: 'underline', width: 60, bold: true }, { text: `(${"alumno.id_alumno"}) ${"alumno.alumno"}`, style: '' },
                                 ]
                             },
                             {
                                 margin: [0, 5],
 
                                 columns: [
-                                    { text: `Período:`, decoration: 'underline', width: 60, bold: true }, { text: `${periodo}`, style: '' },
+                                    { text: `Período:`, decoration: 'underline', width: 60, bold: true }, { text: `${"periodo"}`, style: '' },
                                 ]
                             },]
                     },
@@ -76,7 +78,7 @@ function generarComprobante(periodo,alumno,cursadas) {
                             {
                                 margin: [0, 5],
                                 columns: [
-                                    { text: `Fecha:`, decoration: 'underline', width: 60, bold: true }, { text: `${fecha}`, style: '' },
+                                    { text: `Fecha:`, decoration: 'underline', width: 60, bold: true }, { text: `${"fecha"}`, style: '' },
                                 ]
                             },
                         ]
@@ -127,7 +129,17 @@ function generarComprobante(periodo,alumno,cursadas) {
             building: 'data:/Content/img/logo1.jpg'
         }
     };
+
+    var dd = {
+        content: [
+            'First paragraph',
+            'Another paragraph, this time a little bit longer to make sure, this line will be divided into at least two lines'
+        ]
+        
+    }
     pdfMake.createPdf(docDefinition).open();
+    //pdfMake.createPdf(dd).download('nombre');
+
 }
 
 function fechaDelDia(){

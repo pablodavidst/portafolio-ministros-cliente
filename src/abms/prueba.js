@@ -16,7 +16,6 @@ import { faWindowClose,faPlusSquare, faCheckSquare,faDotCircle } from '@fortawes
 import { faUserCheck, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import {hacerfocoEnPrimerInput,seleccionarTextoInput} from '../Helpers/utilidades-globales';
-import Abmaula from '../abms/Abm-aula';
 import ReactTooltip from 'react-tooltip';
 
 export default function AbmIglesia({id_iglesia, finalizarAltaOcopia,esModal,id_copia, usuario}){
@@ -223,7 +222,6 @@ useEffect(()=>{
                     encargado_uad: datosDelRecordset.id_encargado_uad ? true:false,
                 }
                   
-                console.log('datosIglesia',datosIglesia)
                 //se actualiza el objeto  de inicializacion con lo que traemos de la tabla
                 // se hace un merge de los datos, los que son comunes se pisan y los nuevos se agregan
 
@@ -368,7 +366,6 @@ const grabarIglesia = async (values)=>{
     // viene de un "value" de un select por ejemplo se convierten a string
     // entonces antes de enviar el objeto hay que formatearlo
 
-    console.log('los valores', values)
     const objetoAgrabar = { 
                 nombre_iglesia: values.nombre_iglesia.trim(),
                 direccion:values.direccion.trim(),
@@ -402,7 +399,6 @@ const grabarIglesia = async (values)=>{
 
     setGrabandoDatosIglesia(true)
 
-    console.log('grabo esto ',objetoAgrabar)
     let mensaje_html = `<p>Los datos se grabaron exitosamente</p>`
 
     try{
@@ -461,8 +457,6 @@ const grabarIglesia = async (values)=>{
 }
 
 const cambiarTipoPastor = (e,setFieldValue,values)=>{
-
-    console.log('e.target.value',e.target.value)
 
     setValoresFormulario(values)
 
@@ -554,8 +548,6 @@ const finalizarSeleccionProvincia = (obrero,objetoModificacion)=>{
 
 const cambiarTipoEncargado = (e,setFieldValue,values)=>{
 
-    console.log('e.target.value',e.target.value)
-
     setValoresFormulario(values)
 
     if (e.target.value=='true'){
@@ -640,7 +632,6 @@ const escapeListaP = (e, )=>{
 }
 
 const onsubmitIglesia = values =>{
-    console.log(values)
     iniciarGrabarIglesia(values)
 }
 
@@ -688,18 +679,8 @@ const onsubmitIglesia = values =>{
         id_provincia:Yup.number()
             .integer()
             .required('Falta seleccionar la provincia'),
-  /*      id_pastor_UAD : 
-            Yup.string().nullable().when("pastor_uad", {
-            is: true,
-            then: Yup.string().test("prueba","Falta seleccionar un obrero UAD",value => { console.log(value); return Number(value) >= 0})
-        }),*/
         id_pastor_UAD :Yup.number().integer().required(),
         id_encargado_UAD :Yup.number().integer().required(),
-        /*id_encargado_UAD :
-            Yup.string().nullable().when("encargado_uad", {
-                is: true,
-                then: Yup.string().test("prueba","Falta seleccionar un obrero UAD",value => Number(value) >= 0)               
-            }),*/            
         pastor_uad:Yup.boolean().required(),
         encargado_uad:Yup.boolean().required()
         })    
@@ -710,11 +691,7 @@ const onsubmitIglesia = values =>{
             { grabandoDatosIglesia && <Main><div><Loading blanco={true}/><span className="cargando text-white">Grabando datos...</span></div></Main>}
       <div className={grabandoDatosIglesia ? "hidden": 'pt-4 rounded flex flex-wrap container-mult-flex-center'} >
                  <div><div>
-                {/*<div className="AnaliticoContainer relative">
-                    <div className="FormAnaliticoContainer relative">
-                        <div  className="mb-2 titulo-cab-modal titulo-abm flex f-row">{tituloAbm}
-                    </div>*/}
-                         {/*el botòn de cancelar solo lo habilito cuando es un alta o copia*/}
+                    {/*el botòn de cancelar solo lo habilito cuando es un alta o copia*/}
                     { !esModal && <button onClick={()=>finalizarAltaOcopia(false)} title={tituloCerrar} className="absolute botonAbm"><FontAwesomeIcon icon={faWindowClose}/></button> }
                     <Formik validateOnMount={true}  validateOnChange={true}  validateOnBlur={true}
                     enableReinitialize={true} initialValues={objetoInicializacion} 
@@ -736,10 +713,6 @@ const onsubmitIglesia = values =>{
             <BusquedaProvincias finalizarSeleccion={finalizarSeleccionProvincia} objetoModificacion={{funcion:setFieldValue, id:'id_provincia', nombre:'nombre_encargado'}}/>    
         </Modal>}
         
-        { isShowing && aula && <Modal hide={toggle} isShowing={isShowing} estilo={{width:'500px'}} estiloWrapper={{background:'transparent'}}>
-            <Abmaula id_aula={null}/>    
-        </Modal>}
-
     {/*<div style={{width: "100%"}}><p>{JSON.stringify(values, null, "\t")}</p></div>*/} 
     {/*<div style={{width: "100%"}}><p>{JSON.stringify(touched, null, "\t")}</p></div>*/} 
 
@@ -1398,16 +1371,10 @@ function diferencia(horai,horaf,minutoi,minutof) {
     var hora_desde_nummerica = Number(hora_desde + min_desde)
     var hora_hasta_nummerica = Number(hora_hasta + min_hasta)
 
-    console.log('hora desde: ' + hora_desde_nummerica)
-    console.log('hora hasta: ' + hora_hasta_nummerica)
-
     if (hora_desde_nummerica >= hora_hasta_nummerica) {
         resultado = false;
         mensaje = 'La hora de inicio debe ser anterior a la hora de fín'
     }
-
-    console.log('hora_hasta_nummerica',hora_hasta_nummerica)
-    console.log('hora_desde_nummerica',hora_desde_nummerica)
 
     return (hora_hasta_nummerica > hora_desde_nummerica  )
 

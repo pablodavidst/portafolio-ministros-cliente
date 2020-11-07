@@ -39,6 +39,19 @@
 }
 
 
+.ap-2{
+  border:solid 1px gray;
+  border-left: none;
+  position: fixed; 
+  bottom: 0; 
+  left:2rem; 
+  width:100%;
+ /* background:#517ea4;
+  color:white;*/
+  background: white;
+  overflow: auto;
+  max-height: 70%;
+}
 
 .wrapper {
  position: absolute;
@@ -153,8 +166,9 @@ form input {
 }
 
 
-/*tr:hover { background: #373b3f;color:white !important; }*/
-tbody tr:hover { background:#b0b7bd !important; }
+/*tr:hover { background: #373b3f;color:white !important; }
+tbody tr:hover { background:#b0b7bd !important; }*/
+tbody tr:hover { background:#dcdada !important; }
 
 thead tr th {font-size: large; font-weight: 400;}
 
@@ -1471,6 +1485,11 @@ a.op-active p {
 }
 
 .ti-provincia{
+  width: 200px;
+  display: inline-block;
+}
+
+.ti-detalle{
   width: 200px;
   display: inline-block;
 }
@@ -3049,6 +3068,8 @@ select {
 }
 .Nav {
 border: solid 1px gray;
+border-left: none;
+border-right: none;
  /* background-color: #fff;*/
  background-color:white;
   width: 100%;
