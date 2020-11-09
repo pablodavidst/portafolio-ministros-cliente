@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowClose, faUser, faCircle, faEdit,faPlusSquare } from '@fortawesome/free-regular-svg-icons';
 import Loading from '../componentes/Loading';
 import { v4 as uuidv4 } from 'uuid';
+import imagen from '../logoemc.PNG';
 
 export default function Estadisticas({usuario}){
 

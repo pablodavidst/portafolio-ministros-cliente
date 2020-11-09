@@ -7,7 +7,7 @@ import { Link,useParams } from 'react-router-dom';
 import Loading from '../componentes/Loading';
 import {useContextoGlobal} from '../Context/contextoGlobal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit,faIdCard, faCheckCircle,faTimesCircle, faCircle, faPlusSquare,faDotCircle,faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons';
+import { faFilePdf,faIdCard, faCheckCircle,faTimesCircle, faCircle, faPlusSquare,faDotCircle,faEnvelopeOpen } from '@fortawesome/free-regular-svg-icons';
 import { faSearchDollar,faCircle as iconoBotonOrden, faFileDownload, faEye,faMinus, faWindowClose,faAngleRight,faAngleLeft, faTrash, faSync,faEquals, faGreaterThanEqual,faEnvelopeSquare, faListOl, faMailBulk,faUserCheck,faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import AbmObrero from '../abms/Abm-obrero';
 import AbmIglesia from '../abms/Abm-iglesia';
@@ -23,6 +23,9 @@ import { CSVLink, CSVDownload } from "react-csv";
 import IngresosIgl from '../componentes/IngresosIgl';
 import PiePagina from '../componentes/PiePagina';
 import {imprimir as imprimirMinistros} from '../impresiones/ministros';
+import {imprimir as imprimirIglesias} from '../impresiones/iglesias';
+import {imprimir as imprimirCredenciales} from '../impresiones/credenciales';
+import {imprimir as imprimirIngresos} from '../impresiones/ingresos';
 
 const anchoPaginacion = 50;
 
@@ -109,9 +112,11 @@ export default function Cursos({match,history}){
     const [meses,setMeses] =useState([])
     const [anios,setAnios] =useState([])
     const [dias,setDias] =useState([])
-
+    const [preguntasPDF,setPreguntasPDF] = useState(false)
     const [ingresos,setIngresos] =useState([])
     const [seleccionIngresos,setSeleccionIngresos] =useState({dia_d:1,dia_h:1,mes_d:0,mes_h:0,anio_d:0,anio_h:0})
+    const [tituloPDF,setTituloPDF] = useState("132")
+    const [nombrePDF,setNombrePDF] = useState("752")
 
     const parametros = useParams();
 
@@ -929,8 +934,49 @@ const ministeriosDeLosObreros = ()=>{
 }
 
 const ejecutarImprimirMinistros = ()=>{
-    imprimirMinistros(cursosAmostrar)
+
+    imprimirMinistros(cursosAmostrar, nombrePDF, tituloPDF)
 }
+
+const ejecutarImprimirIngresos = ()=>{
+
+    imprimirIngresos(cursosAmostrar, nombrePDF, tituloPDF)
+}
+
+const ejecutarImprimirIglesias = ()=>{
+
+    imprimirIglesias(cursosAmostrar, nombrePDF, tituloPDF)
+}
+
+const ejecutarImprimirCredenciales = ()=>{
+
+    imprimirCredenciales(cursosAmostrar, nombrePDF, tituloPDF)
+}
+
+const iniciarImprimirPDF = ()=>{
+    if (preguntasPDF){
+        setPreguntasPDF(false)
+    }else{
+        setPreguntasPDF(true)
+        setTituloPDF("")
+        setNombrePDF("")
+        hacerfocoEnPrimerInput("titulo-pdf")
+    }
+
+}
+
+const cerrarPreguntasPDF = ()=>{
+    setPreguntasPDF(false)
+}
+
+const handleChangeTituloPDF = (e)=>{
+    setTituloPDF(e.target.value)
+}
+
+const handleChangeNombrePDF = (e)=>{
+    setNombrePDF(e.target.value) 
+}
+
 
 const provinciasDeLosCursos = ()=>{
 
@@ -1614,6 +1660,14 @@ return(
                     limpiarEstadoImpresion={limpiarEstadoImpresion}
                     cursosAExportar = {cursosAExportar}
                     usuario={usuario}
+                    ejecutarImprimirCredenciales = {ejecutarImprimirCredenciales}
+                    iniciarImprimirPDF ={iniciarImprimirPDF}
+                    preguntasPDF = {preguntasPDF}
+                    cerrarPreguntasPDF = {cerrarPreguntasPDF}
+                    tituloPDF = {tituloPDF}
+                    nombrePDF = {nombrePDF}
+                    handleChangeTituloPDF = {handleChangeTituloPDF}
+                    handleChangeNombrePDF = {handleChangeNombrePDF}                    
                 />
             }            
             {
@@ -1649,6 +1703,13 @@ return(
                     setOrdenarFechaAlta = {setOrdenarFechaAlta}
                     funcionOrden = {funcionOrden}
                     ejecutarImprimirMinistros = {ejecutarImprimirMinistros}
+                    iniciarImprimirPDF ={iniciarImprimirPDF}
+                    preguntasPDF = {preguntasPDF}
+                    cerrarPreguntasPDF = {cerrarPreguntasPDF}
+                    tituloPDF = {tituloPDF}
+                    nombrePDF = {nombrePDF}
+                    handleChangeTituloPDF = {handleChangeTituloPDF}
+                    handleChangeNombrePDF = {handleChangeNombrePDF}
                 />
             }
             {
@@ -1664,6 +1725,14 @@ return(
                     limpiarNombre = {limpiarNombre}
                     cursosAExportar = {cursosAExportar}
                     usuario={usuario}
+                    ejecutarImprimirIngresos = {ejecutarImprimirIngresos}
+                    iniciarImprimirPDF ={iniciarImprimirPDF}
+                    preguntasPDF = {preguntasPDF}
+                    cerrarPreguntasPDF = {cerrarPreguntasPDF}
+                    tituloPDF = {tituloPDF}
+                    nombrePDF = {nombrePDF}
+                    handleChangeTituloPDF = {handleChangeTituloPDF}
+                    handleChangeNombrePDF = {handleChangeNombrePDF}                    
                 />
             }
          
@@ -1697,6 +1766,14 @@ return(
                         estadoBalances = {estadoBalances}
                         cursosAExportar = {cursosAExportar}
                         usuario={usuario}
+                        ejecutarImprimirIglesias = {ejecutarImprimirIglesias}
+                        iniciarImprimirPDF ={iniciarImprimirPDF}
+                        preguntasPDF = {preguntasPDF}
+                        cerrarPreguntasPDF = {cerrarPreguntasPDF}
+                        tituloPDF = {tituloPDF}
+                        nombrePDF = {nombrePDF}
+                        handleChangeTituloPDF = {handleChangeTituloPDF}
+                        handleChangeNombrePDF = {handleChangeNombrePDF}                        
                     />
             }    
             { hayFiltrosActivos && 
@@ -2879,7 +2956,8 @@ function CabeceraMinistros({setCrearObrero,toggle,setEnviarCorreo,iniciarEnviarC
     limpiarEstadoImpresionListaMinistros,estadoCredencialSeleccionListaMinistros,estadosCredencialListaMinistros,
     handleChangeSelectCredencialListaMinistros,cursosAExportar,
     usuario, soloConFechaAlta, setSoloConFechaAlta,ordenarFechaAlta,setOrdenarFechaAlta,funcionOrden,
-    ejecutarImprimirMinistros
+    ejecutarImprimirMinistros,preguntasPDF,iniciarImprimirPDF,cerrarPreguntasPDF,
+    nombrePDF, tituloPDF, handleChangeTituloPDF,handleChangeNombrePDF 
     }){
  
 return  <div className="flex f-col">
@@ -2891,10 +2969,11 @@ return  <div className="flex f-col">
                 </span>
                 <span onClick={iniciarEnviarCorreo} className="cursor-pointer botonNc ml-6" >
                     <FontAwesomeIcon onClick={()=>{setEnviarCorreo(true);toggle()}} className="color-tomato" icon={faEnvelopeOpen}/> Enviar un mail
-                </span>       
-                <span onClick={ejecutarImprimirMinistros} className="cursor-pointer botonNc ml-6" >
-                    <FontAwesomeIcon onClick={()=>{ejecutarImprimirMinistros()}} className="color-tomato" icon={faEnvelopeOpen}/> Crear PDF
+                </span>   
+                <span onClick={iniciarImprimirPDF} className="cursor-pointer botonNc ml-6" >
+                    <FontAwesomeIcon onClick={()=>{iniciarImprimirPDF()}} className="color-tomato" icon={faFilePdf}/> Archivo PDF
                 </span> 
+
                 <CSVLink
                         data={cursosAExportar}
                         filename={`ministros-region${usuario.id_region}.csv`}
@@ -2902,9 +2981,18 @@ return  <div className="flex f-col">
                         className="tdec-none"
                         >
                          <span className="cursor-pointer botonNc ml-6 text-black tdec-none">
-                            <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Generar un archivo
+                            <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Archivo CSV 
                         </span>
                 </CSVLink>
+                <div className="relative w-100 pdfcontainer">
+                    {preguntasPDF && <ImpresionPDF cerrarPreguntasPDF={cerrarPreguntasPDF} 
+                                                tituloPDF={tituloPDF} 
+                                                nombrePDF={nombrePDF}
+                                                handleChangeTituloPDF = {handleChangeTituloPDF}
+                                                handleChangeNombrePDF = {handleChangeNombrePDF}
+                                                ejecutarImprimirPDF = {ejecutarImprimirMinistros}
+                                                />}
+                </div>
 
             </div>
             <div className="absolute top-50 left-50">
@@ -2984,13 +3072,18 @@ function CabeceraIglesias({setCrearIglesia,toggle,periodosFiscales,periodoSelecc
     textoNombre,textoPastor,textoEncargado,textoLocalidad,handleChangeInputNombre,handleChangeInputPastor,
     handleChangeInputEncargado,handleChangeInputLocalidad,limpiarNombre,limpiarPastor,limpiarEncargado,
     limpiarLocalidad,tipoIglesiaSeleccion,limpiarTipoIglesia,handleChangeSelectTipoIgl,tipoIglesias,estadoBalanceSeleccion,
-    limpiarEstadoBalance,handleChangeSelectEstadoBalance,estadoBalances,cursosAExportar,usuario}){
+    limpiarEstadoBalance,handleChangeSelectEstadoBalance,estadoBalances,cursosAExportar,usuario,
+    ejecutarImprimirIglesias,preguntasPDF,iniciarImprimirPDF,cerrarPreguntasPDF,
+    nombrePDF, tituloPDF, handleChangeTituloPDF,handleChangeNombrePDF}){
 
     return <div className="flex f-col">
     <div className="centro-w100pc">
         <span onClick={()=>{setCrearIglesia(true);toggle()}} className="cursor-pointer botonNc ml-6" >
             <FontAwesomeIcon className="color-tomato" icon={faPlusSquare}/> Crear una nueva iglesia
         </span>
+        <span onClick={iniciarImprimirPDF} className="cursor-pointer botonNc ml-6" >
+              <FontAwesomeIcon onClick={()=>{iniciarImprimirPDF()}} className="color-tomato" icon={faFilePdf}/> Archivo PDF
+        </span> 
         <CSVLink
                 data={cursosAExportar}
                 filename={`iglesias-region${usuario.id_region}.csv`}
@@ -2998,9 +3091,18 @@ function CabeceraIglesias({setCrearIglesia,toggle,periodosFiscales,periodoSelecc
                 className="tdec-none"
                 >
                     <span className="cursor-pointer botonNc ml-6 text-black tdec-none">
-                    <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Generar un archivo
+                    <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Archivo CSV
                 </span>
         </CSVLink>
+        <div className="relative w-100 pdfcontainer">
+                    {preguntasPDF && <ImpresionPDF cerrarPreguntasPDF={cerrarPreguntasPDF} 
+                                                tituloPDF={tituloPDF} 
+                                                nombrePDF={nombrePDF}
+                                                handleChangeTituloPDF = {handleChangeTituloPDF}
+                                                handleChangeNombrePDF = {handleChangeNombrePDF}
+                                                ejecutarImprimirPDF = {ejecutarImprimirIglesias}
+                                                />}
+        </div>        
     </div>
     <div className="absolute top-50 left-50">
         
@@ -3054,12 +3156,24 @@ function CabeceraIngresos({seleccionIngresos,
                            handleChangeSeleccionIngresos,
                            dias,meses,anios,textoNombre,
                            handleChangeInputNombre,limpiarNombre,
-                           cursosAExportar,usuario}){
+                           cursosAExportar,usuario,
+                           ejecutarImprimirIngresos,
+                           preguntasPDF,
+                           iniciarImprimirPDF,
+                           cerrarPreguntasPDF,
+                           nombrePDF, 
+                           tituloPDF, 
+                           handleChangeTituloPDF,
+                           handleChangeNombrePDF 
+                        }){
     return <div className="flex f-col">
 
 
     <div className="centro-w100pc">
 
+        <span onClick={iniciarImprimirPDF} className="cursor-pointer botonNc ml-6" >
+            <FontAwesomeIcon onClick={()=>{iniciarImprimirPDF()}} className="color-tomato" icon={faFilePdf}/> Archivo PDF
+        </span> 
         <CSVLink
                 data={cursosAExportar}
                 filename={`ingresos-region${usuario.id_region}.csv`}
@@ -3067,9 +3181,18 @@ function CabeceraIngresos({seleccionIngresos,
                 className="tdec-none"
                 >
                     <span className="cursor-pointer botonNc ml-6 text-black tdec-none">
-                    <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Generar un archivo
+                    <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Archivo CSV
                 </span>
         </CSVLink>
+        <div className="relative w-100 pdfcontainer">
+                    {preguntasPDF && <ImpresionPDF cerrarPreguntasPDF={cerrarPreguntasPDF} 
+                                                tituloPDF={tituloPDF} 
+                                                nombrePDF={nombrePDF}
+                                                handleChangeTituloPDF = {handleChangeTituloPDF}
+                                                handleChangeNombrePDF = {handleChangeNombrePDF}
+                                                ejecutarImprimirPDF = {ejecutarImprimirIngresos}
+                                                />}
+        </div>        
     </div>
 
     <div className="absolute top-50 left-50">
@@ -3119,12 +3242,23 @@ function CabeceraCredenciales({textoNombre,
                                 motivoSolicitudes,
                                 estadoImpresion,
                                 handleChangeEstadoImpresion,limpiarEstadoImpresion,
-                                cursosAExportar,usuario
+                                cursosAExportar,usuario,
+                                ejecutarImprimirCredenciales,
+                                preguntasPDF,
+                                iniciarImprimirPDF,
+                                cerrarPreguntasPDF,
+                                nombrePDF, 
+                                tituloPDF, 
+                                handleChangeTituloPDF,
+                                handleChangeNombrePDF                                 
                             }){
     return <div className="flex f-col">
 
     <div className="centro-w100pc">
 
+            <span onClick={iniciarImprimirPDF} className="cursor-pointer botonNc ml-6" >
+                    <FontAwesomeIcon onClick={()=>{iniciarImprimirPDF()}} className="color-tomato" icon={faFilePdf}/> Archivo PDF
+            </span> 
             <CSVLink
                     data={cursosAExportar}
                     filename={`credenciales-region${usuario.id_region}.csv`}
@@ -3132,9 +3266,18 @@ function CabeceraCredenciales({textoNombre,
                     className="tdec-none"
                     >
                         <span className="cursor-pointer botonNc ml-6 text-black tdec-none">
-                        <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Generar un archivo
+                        <FontAwesomeIcon className="color-tomato" icon={faFileDownload}/> Archivo CSV
                     </span>
             </CSVLink>
+            <div className="relative w-100 pdfcontainer">
+                    {preguntasPDF && <ImpresionPDF cerrarPreguntasPDF={cerrarPreguntasPDF} 
+                                                tituloPDF={tituloPDF} 
+                                                nombrePDF={nombrePDF}
+                                                handleChangeTituloPDF = {handleChangeTituloPDF}
+                                                handleChangeNombrePDF = {handleChangeNombrePDF}
+                                                ejecutarImprimirPDF = {ejecutarImprimirCredenciales}
+                                                />}
+            </div>            
     </div>
 
     <div className="absolute top-50 left-50">
@@ -3186,4 +3329,53 @@ function CabeceraCredenciales({textoNombre,
         </div>
      </div>
 </div>
+}
+
+function ImpresionPDF({cerrarPreguntasPDF, 
+                        tituloPDF, 
+                        nombrePDF,
+                        handleChangeTituloPDF,
+                        handleChangeNombrePDF,
+                        ejecutarImprimirPDF}){
+    const [imprimirSinParametros,setImprimirSinParametros] = useState(false)
+
+    function imprimir(){
+
+        if (imprimirSinParametros){
+            ejecutarImprimirPDF()
+            cerrarPreguntasPDF()
+        }else{
+            if (tituloPDF!="" && nombrePDF!="" )
+            {
+                ejecutarImprimirPDF()
+                cerrarPreguntasPDF()
+            }else{
+                alert("Ingrese el título y nombre del archivo pdf")
+            }
+        }
+   }
+
+   function handleCheckBox (){
+       setImprimirSinParametros(!imprimirSinParametros)
+   }
+   
+   return <div className="absolute bg-white border-dotted-gray border-radius-7">
+        <input onChange={handleChangeTituloPDF} type="text" value={tituloPDF} autoComplete="off" name="titulo-pdf" id="titulo-pdf" placeholder="Título del documento" className="border-dotted-gray m-2"/>
+        <input onChange={handleChangeNombrePDF} type="text" value={nombrePDF} autoComplete="off" placeholder="Nombre del archivo" name="nombre" id="nombre-pdf" className="border-dotted-gray m-2"/>
+        <label title="Generar el documento sin especificar título ni nombre de archivo" className="text-xsmall mr-2" htmlFor="spar">Omitir parámetros</label>
+        <input title="Generar el documento sin especificar título ni nombre de archivo" type="checkbox" id="spar" checked={imprimirSinParametros} onClick={handleCheckBox} />
+
+        <div className="flex f-row">
+            <button onClick={imprimir}>Crear PDF</button>
+            <button><FontAwesomeIcon 
+                className="ic-abm"
+                icon={faWindowClose} 
+                title="Cerrar impresión de archivo PDF"
+                onClick={cerrarPreguntasPDF}
+                />
+            </button>
+        </div>
+
+
+    </div>
 }

@@ -35,13 +35,12 @@ function generarDocumento(cursadas,nombrePDF, tituloPDF) {
 
     console.log('cursadas',cursadas)
     var cursadas_mapeadas = cursadas.map(item => { return { 
-                                        nombre_obrero: item.nombre_obrero, 
-                                        direccion: item.direccion, 
-                                        ubicacion: item.ubicacion, 
-                                        ministerio: item.ministerio, 
+                                        nombre: item.nombre, 
                                         rango: item.rango, 
-                                        telefono: item.telefono, 
-                                        credencial: item.credencial}
+                                        region: item.region, 
+                                        Motivo: item.Motivo, 
+                                        f_solicitud: item.f_solicitud, 
+                                        estado: item.estado}
                                     }) // uso .map para transformar un array de objetos a un nuevo array de objetos pero elijiendo los campos.
                                             // El array cursadas que viene como propiedad del abm de alumnos trae las cursadas con muchos campos pero solo queremos 4 campos para armar la grilla
 
@@ -52,7 +51,6 @@ function generarDocumento(cursadas,nombrePDF, tituloPDF) {
                                         { text: 'Ubicación', style: 'tableHeader' }, 
                                         { text: 'Ministerio', style: 'tableHeader' }, 
                                         { text: 'Rango', style: 'tableHeader' }, 
-                                        { text: 'Teléfono', style: 'tableHeader' }, 
                                         { text: 'Credencial', style: 'tableHeader' }])
 
     var docDefinition = {

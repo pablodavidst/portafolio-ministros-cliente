@@ -35,25 +35,25 @@ function generarDocumento(cursadas,nombrePDF, tituloPDF) {
 
     console.log('cursadas',cursadas)
     var cursadas_mapeadas = cursadas.map(item => { return { 
-                                        nombre_obrero: item.nombre_obrero, 
-                                        direccion: item.direccion, 
+                                        nombre_igl: item.nombre_igl, 
+                                        pastor: item.pastor, 
+                                        domicilio: item.domicilio, 
                                         ubicacion: item.ubicacion, 
-                                        ministerio: item.ministerio, 
-                                        rango: item.rango, 
                                         telefono: item.telefono, 
-                                        credencial: item.credencial}
+                                        tipo_iglesia: item.tipo_iglesia, 
+                                        balance: item.balance}
                                     }) // uso .map para transformar un array de objetos a un nuevo array de objetos pero elijiendo los campos.
                                             // El array cursadas que viene como propiedad del abm de alumnos trae las cursadas con muchos campos pero solo queremos 4 campos para armar la grilla
 
     var cursadas_mapeadas_vector = cursadas_mapeadas.map(item=>{return Object.values(item)}) // uso .map para transformar un array de objetos en un nuevo array pero ahora no de objetos sino de arrays porque apliquè la funciòn Object.values. Hago esto porque para armar el pdf necesito un array de arrays y no array de objetos
     
     cursadas_mapeadas_vector.unshift([{ text: 'Nombre', style: 'tableHeader' }, 
-                                        { text: 'Dirección', style: 'tableHeader' }, 
+                                        { text: 'Pastor', style: 'tableHeader' }, 
+                                        { text: 'Domicilio', style: 'tableHeader' }, 
                                         { text: 'Ubicación', style: 'tableHeader' }, 
-                                        { text: 'Ministerio', style: 'tableHeader' }, 
-                                        { text: 'Rango', style: 'tableHeader' }, 
                                         { text: 'Teléfono', style: 'tableHeader' }, 
-                                        { text: 'Credencial', style: 'tableHeader' }])
+                                        { text: 'Tipo', style: 'tableHeader' }, 
+                                        { text: 'Balance', style: 'tableHeader' }])
 
     var docDefinition = {
 

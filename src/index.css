@@ -197,6 +197,16 @@ form textarea {
   width: 60px;
 }
 
+.pdfcontainer{
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.inline{
+  display:inline;
+}
+
 .g-encabezado-1{
   margin-left: 306px;
 }
@@ -911,6 +921,10 @@ table tr{
 
 .border-dotted-gray{
   border:dotted 1px gray
+}
+
+.border-radius-7{
+  border-radius: 7px;
 }
 
 .color-crimson{

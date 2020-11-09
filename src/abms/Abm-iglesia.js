@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 import {Formik, Form, Field, ErrorMessage, useFormikContext} from 'formik';
 import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWindowClose,faPlusSquare, faCheckSquare,faDotCircle } from '@fortawesome/free-regular-svg-icons';
+import { faChartBar,faWindowClose,faPlusSquare, faCheckSquare,faDotCircle } from '@fortawesome/free-regular-svg-icons';
 import { faUserCheck, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from 'uuid';
 import {hacerfocoEnPrimerInput,seleccionarTextoInput} from '../Helpers/utilidades-globales';
@@ -1347,8 +1347,11 @@ const onsubmitIglesia = values =>{
             </div>}
         </div> 
 
-        {diezmos.length>0 && <div className="cont-grp-dm">
-            <p>Resumen de diezmos (Últimos 12 meses) </p>
+        {diezmos.length>0 && id_iglesia && <div className="cont-grp-dm">
+        
+        <span>
+            <FontAwesomeIcon icon={faChartBar} className="color-tomato"/> Resumen de diezmos (Últimos 12 meses)
+        </span>
          <div className="flex f-row mt-2">
           {diezmos.reverse().map(item=><div className="flex f-col"><Spinner item={item} todos={diezmos}/><p className="pgf-dm">{item.periodo}</p></div> )}   
          </div>
